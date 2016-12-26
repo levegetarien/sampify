@@ -1,8 +1,10 @@
-from LIBS import dictionary
-from LIBS import metadata
-from LIBS import sampa_vowels
-from LIBS import text
-from LIBS import vowel_count
-from LIBS import word
+from libs import dictionary
+from libs import metadata
+from libs import sampa_vowels
+from libs import text
+from libs import vowel_count
+from libs import word
 
-from LIBS.RULES import *
+from libs.sampa_rules import *
+
+from settings.paths import paths

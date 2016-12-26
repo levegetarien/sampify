@@ -1,10 +1,10 @@
 #!/Users/cvr270/Library/Enthought/Canopy_64bit/User/bin/python
-import xlrd
-import sys
+import xlrd, sys, logging
 
 class metadata:
   """class containing all metadata sourced from excel"""
   def __init__(self,inp_xls):
+    self.log=logging.getLogger('sampify')
     self.wbk  = xlrd.open_workbook(inp_xls)
     self.text = self.parse_sheet(self.wbk,'text')
     self.pers = self.parse_sheet(self.wbk,'pers')
@@ -19,14 +19,14 @@ class metadata:
         self.props[self.headers[j]]=self.row[j]
       self.prop.append(self.props)
     return self.prop
-      
-      
+
+
 def main():
   xls_filename = sys.argv[1]
   m=metadata(xls_filename)
   print "Auteur: ", m.text[0]["AUTHOR"]
   for i in range(len(m.pers)):
     print "Personnage " +str(i)+": ", m.pers[i]["NAME"]
-  
+
 if __name__ == "__main__":
   main()

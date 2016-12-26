@@ -1,21 +1,22 @@
 
 class TotCount_Vow:
   """this is a simple counter class"""
-  
-  def __init__(self,log,vowels={}):
+
+  def __init__(self,vowels={}):
     """we do nothing here, except create an empty container"""
-    self.log=log
+    import logging
+    self.log=logging.getLogger('sampify')
     self.vowels = vowels
     self.allvowels=["Ei","9y","Au","a:i","o:i","ui","iu","yu","e:u","I","E","A","O","Y","@","i","y","u","a:","e:","2:","o:","E:","9:","O:"]
     if self.vowels=={}:
       for i in self.allvowels: self.vowels[i]=0
-    
+
   def __add__(self,other):
     self.tempvow={}
     for i in self.allvowels:
       self.tempvow[i]=0
       self.tempvow[i]+=(other.vowels[i]+self.vowels[i])
-    return TotCount(self.log,self.tempvow)
+    return TotCount(self.tempvow)
   def __radd__(self, other):
     if other == 0: return self
     else:          return self.__add__(other)
@@ -24,21 +25,21 @@ class TotCount_Vow:
     for i in self.allvowels:
       self.tempvow[i]=0
       self.tempvow[i]-=(other.vowels[i]+self.vowels[i])
-    return TotCount(self.log,self.tempvow)
+    return TotCount(self.tempvow)
   def __div__(self,other):
     self.tempvow={}
     for i in self.allvowels:
       if other.vowels[i] == 0:self.tempvow[i]=0
       elif self.vowels[i] == 0:self.tempvow[i]=0
       else:self.tempvow[i]=round(1.0*self.vowels[i]/other.vowels[i],2)
-    return TotCount(self.log,self.tempvow)
+    return TotCount(self.tempvow)
 
   def countword(self,w):
     """this keeps track of how many times vowels of the word are present"""
 
     for i in self.allvowels:
       self.vowels[i]+=w.attr["vowel"][i]
-  
+
   def countlist(self,l):
     for i in l:
       if i in self.allvowels:
@@ -52,19 +53,19 @@ class TotCount_Vow:
       for i in sorted(self.vowels.keys()):
         g.write(" >> vowel {0: <4} counted {1}\n".format(i,self.vowels[i]))
       g.close()
-    else: 
+    else:
       A=''
       if not Nohead: A="\n####### TOTAL COUNT #######\n"
       for i in sorted(self.vowels.keys()):
         A+=" >> vowel {0: <4} counted {1}\n".format(i,self.vowels[i])
       return A
-  
+
   def count(self):
     num=0
     for i in self.vowels.keys():
       num+=self.vowels[i]
     return num
-    
+
   def plotfig(self,PrintToFile=False):
       import matplotlib.pyplot as plt
       import numpy as np
@@ -80,7 +81,7 @@ class TotCount_Vow:
       ax.set_xticklabels( vowels )
       if PrintToFile: plt.savefig(PrintToFile)
       else: plt.show()
-      
+
 #########################################################################################
 #  helper functions related to counting and displaying
 #  to be converted in object later
@@ -119,7 +120,7 @@ def plot_star_vow(m1,m2,m3,PrintToFile=False):
   v=sorted(m1.keys())
   v1,v2,v3=[m1[i] for i in v],[m2[i] for i in v],[m3[i] for i in v]
   c1,c2,c3=[100*i/sum(v1) for i in v1],[100*i/sum(v2) for i in v2],[100*i/sum(v3) for i in v3]
-  
+
 
   properties = v
   matplotlib.rc('axes', facecolor = 'white')
@@ -191,8 +192,8 @@ def plot_star_vow(m1,m2,m3,PrintToFile=False):
 
   if PrintToFile: plt.savefig(PrintToFile)
   else: plt.show()
-  
-  
+
+
 def plot_heatmap(l,PrintToFile=False):
 
   act_o=1
@@ -200,7 +201,7 @@ def plot_heatmap(l,PrintToFile=False):
   m={}
   t=[]
   d=[]
-  for i in l:  
+  for i in l:
     act=i.attr["act"]
     sce=i.attr["scene"]
     if act==act_o and sce==sce_o:
@@ -211,7 +212,7 @@ def plot_heatmap(l,PrintToFile=False):
       sce_o=sce
       t.append(m)
       m=count_vow({},i)
-    
+
   labels=["Ei","9y","Au","a:i","o:i","ui","iu","yu","e:u","I","E","A","O","Y","i","y","u","a:","e:","2:","o:","E:","9:","O:"]
   values=[]
   for i in t:
@@ -250,4 +251,3 @@ def plot_heatmap(l,PrintToFile=False):
       t.tick2On = False
   if PrintToFile: plt.savefig(PrintToFile)
   else: plt.show()
-  

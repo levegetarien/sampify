@@ -1,6 +1,7 @@
 class SampaRules:
-  def __init__(self, log):
-    self.log     = log
+  def __init__(self):
+    import logging
+    self.log=logging.getLogger('sampify')
 
   def update_word(self, w, cl, startpos, bron, sampa,rule):
     if   rule==100:

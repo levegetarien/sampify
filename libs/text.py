@@ -6,9 +6,10 @@ The object can translate the words using the word.py class
 class Text:
   """class used to store the ensemble of words"""
 
-  def __init__(self,log, preflist, suflist, dictionary,lemmalist):
+  def __init__(self, preflist, suflist, dictionary,lemmalist):
     """not much is done here"""
-    self.log=log
+    import logging
+    self.log=logging.getLogger('sampify')
     self.preflist      = self.read_dict(preflist)
     self.suflist       = self.read_dict(suflist)
     self.lemmalist     = self.read_lemma(lemmalist)
@@ -33,12 +34,12 @@ class Text:
       for j in i.line:
         textonly.append(j)
     self.fulltext_o=self.fulltext_o + textonly
-  
+
   def read_lemma(self,f):
     if type(f)==dict: return f
     self.log.info("reading lemma xml: {0}".format(f))
     return xml_lemma(f).lemmas
-  
+
   def read_dict(self,f,d={}):
     if type(f)==dict: return f
     with open(f, "r") as self.f:
@@ -52,7 +53,7 @@ class Text:
     """logically this step is to be performed before translateion!        """
     self.log.info("{0} added to the punctuation list".format(P))
     self.punctuation.append(P)
-    
+
   def translate(self):
     """now all words (string) are magically transformed into smart objects"""
     """the smart objects retain the input, but also clean and translate   """
@@ -61,7 +62,7 @@ class Text:
     for i in self.fulltext_o:
       self.fulltext_e.append(Word(i,D,self.punctuation))
     """
-    self.fulltext_e=[Word(i, self.log, self.preflist, self.suflist,self.dictionary,self.lemmalist,self.punctuation) for i in self.fulltext_o]
+    self.fulltext_e=[Word(i, self.preflist, self.suflist,self.dictionary,self.lemmalist,self.punctuation) for i in self.fulltext_o]
 
   def printword(self,i):
     """just in case we want to see the result!!"""
@@ -74,7 +75,7 @@ class Text:
 class xml_lemma:
   def __init__(self,inf):
     self.lemmas=self.parse(inf)
-    
+
   def gettext(self,elem):
     text = elem.text or ""
     for subelem in elem:
@@ -82,18 +83,18 @@ class xml_lemma:
         if subelem.tail:
           text = text + subelem.tail
     return text
-    
+
   def parse(self,inf):
     import sys, subprocess, urllib2, unicodedata
     import xml.etree.ElementTree as ET
-    reload(sys) 
+    reload(sys)
     sys.setdefaultencoding("utf-8")
-    
+
     self.lemmalist={}
-    
+
     self.tree = ET.parse(inf)
     self.root = self.tree.getroot()
-    
+
     self.FOUND = [element for element in self.root.iter() if (element.tag == 'w' and 'lemma' in element.attrib and 'type' in element.attrib)]
     for i in self.FOUND:
       self.type={}
@@ -115,7 +116,7 @@ class xml_lemma:
 class xml_text:
   def __init__(self,inf):
     self.fulltext=self.xml_parser(inf)
-    
+
   def gettext(self,elem):
     text = elem.text or ""
     for subelem in elem:
@@ -124,22 +125,22 @@ class xml_text:
         if subelem.tail:
           text = text + subelem.tail
     return text
-    
+
   def xml_parser(self,xml_filename):
     import sys, subprocess, urllib2, unicodedata
     import xml.etree.ElementTree as ET
-    reload(sys) 
+    reload(sys)
     sys.setdefaultencoding("utf-8")
-  
+
     self.sp,       self.lines  = "",[]
     self.newact,   self.Nact   = False,0
     self.newscene, self.Nscene = False,0
-    
+
     self.tree = ET.parse(xml_filename)
     self.root = self.tree.getroot()
-    
+
     self.FOUND = [element for element in self.root.iter() if (element.tag == 'sp' or element.attrib == {'type': 'act'} or element.attrib == {'type': 'scene'})]
-    
+
     for j in self.FOUND:
       if j.tag == 'sp':
         if self.newact==True:
@@ -158,14 +159,14 @@ class xml_text:
       elif j.attrib['type']=='act':		self.newact, self.Nscene = True, 0
       elif j.attrib['type']=='scene': self.newscene = True
     return self.lines
-      
+
 class line_from_xml:
   def __init__(self,line,speaker,act,scene):
     self.line   = []
     self.speaker= speaker
     self.act    = act
     self.scene  = scene
-    
+
     l=line.split()
     length=len(l)
     for i in range(len(l)):

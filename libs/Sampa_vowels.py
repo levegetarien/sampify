@@ -31,8 +31,8 @@ class SampaV:
 
   def printused(self):
     """convert the list of all vowels used to a string"""
-    somelist=[]
+    self.somelist=[]
     for i in self.allvowels:
       if self.vowels[i]>0:
-        somelist.append(i)
+        self.somelist.append(i)
     return ' '.join(self.somelist)

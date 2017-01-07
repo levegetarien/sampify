@@ -1,5 +1,3 @@
-#test fieke - test test
-#test fieke - test test
 class SampaRules:
   def __init__(self):
     import logging

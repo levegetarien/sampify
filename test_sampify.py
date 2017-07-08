@@ -3,31 +3,47 @@ from classes.naf import naf
 from classes.sampa_counter import count
 from config import *
 
-a=Sampify(PATH+'/files/in/RULES werkdocument.xlsx')
-n=naf(PATH+'/files/in/naf_alew001besl01_01.xml')
-c=count()
-words_nl=n.get_wordlist_nopunct()
-words_sp=[a.translate(i) for i in words_nl]
-for i in range(len(words_nl)):
-    c.add(words_sp[i])
-    print(words_nl[i],words_sp[i])
-print(c.count)
 
-with open(PATH+'/files/in/lijst_Alewijn_corrected_t_m_q.txt') as data_file:
-    content = [x.strip() for x in data_file.readlines()]
-    newtable_good=""
-    newtable_baad=""
-    for i in content:
-        if len(i)>1:
-            nl=i.split()[0]
-            smpa = i.split()[-1]
-            if smpa == a.translate(nl):
-                newtable_good += "{0:<20}\t{1:<20}\n".format(nl, a.translate(nl))
-            if smpa != a.translate(nl):
-                newtable_baad += "{0:<20}\t{1:<20}\t{2:<20}\n".format(nl, smpa, a.translate(nl))
+def read_naf():
+    a = Sampify(PATH + '/files/in/RULES werkdocument.xlsx')
+    n = naf(PATH + '/files/in/naf_alew001besl01_01.xml')
+    c = count()
 
-with open(PATH+'/files/out/lijst_Alewijn_sampified_good.txt','w') as g: g.write(newtable_good)
-with open(PATH+'/files/out/lijst_Alewijn_sampified_bad.txt','w') as g: g.write(newtable_baad)
+    words_nl = n.get_wordlist_nopunct()
+    words_sp = [a.translate(i) for i in words_nl]
+    words_tpl= zip(words_nl, words_sp)
+    for i in words_sp: c.add(i)
+
+    return words_tpl, c.count
+
+
+def validate():
+    a = Sampify(PATH + '/files/in/RULES werkdocument.xlsx')
+    with open(PATH + '/files/in/lijst_Alewijn_corrected_t_m_q.txt') as data_file:
+        content = [x.strip() for x in data_file.readlines()]
+        new_table_good, new_table_baad = "", ""
+        for i in content:
+            if len(i) > 1:
+                nl = i.split()[0]
+                smpa = i.split()[-1]
+                if smpa == a.translate(nl):
+                    new_table_good += "{0:<20}\t{1:<20}\n".format(nl, a.translate(nl))
+                if smpa != a.translate(nl):
+                    new_table_baad += "{0:<20}\t{1:<20}\t{2:<20}\n".format(nl, smpa, a.translate(nl))
+
+    return new_table_good, new_table_baad
+
+
+if __name__ == "__main__":
+    words, count = read_naf()
+    for i in words:
+        print("{0:<20}\t{1:<20}".format(i[0], i[1]))
+    for i in count.keys():
+        print("{0:<20}\t{1:<20}".format(i, count[i]))
+
+    good,bad=validate()
+    with open(PATH+'/files/out/lijst_Alewijn_sampified_good.txt','w') as g: g.write(good)
+    with open(PATH+'/files/out/lijst_Alewijn_sampified_bad.txt','w') as g: g.write(bad)
 
 """
 a=rules()

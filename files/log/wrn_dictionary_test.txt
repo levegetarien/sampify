@@ -1,5 +1,0 @@
-[2017-07-01 23:43:07] [      rules] [ _add_rules] [ 52] [ WARNING] - combining rules can negatively affect the order of rules. Always check the combination of rules manually
-[2017-07-01 23:44:11] [      rules] [ _add_rules] [ 52] [ WARNING] - combining rules can negatively affect the order of rules. Always check the combination of rules manually
-[2017-07-01 23:47:30] [      rules] [ _add_rules] [ 52] [ WARNING] - combining rules can negatively affect the order of rules. Always check the combination of rules manually
-[2017-07-01 23:48:04] [      rules] [ _add_rules] [ 52] [ WARNING] - combining rules can negatively affect the order of rules. Always check the combination of rules manually
-[2017-07-01 23:52:54] [      rules] [ _add_rules] [ 52] [ WARNING] - combining rules can negatively affect the order of rules. Always check the combination of rules manually

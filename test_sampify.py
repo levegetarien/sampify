@@ -7,23 +7,27 @@ a=Sampify(PATH+'/files/in/RULES werkdocument.xlsx')
 n=naf(PATH+'/files/in/naf_alew001besl01_01.xml')
 c=count()
 words_nl=n.get_wordlist_nopunct()
-words_sp=[a.translate(i)for i in words_nl]
+words_sp=[a.translate(i) for i in words_nl]
 for i in range(len(words_nl)):
     c.add(words_sp[i])
     print(words_nl[i],words_sp[i])
 print(c.count)
 
-# with open(PATH+'/files/in/lijst_Alewijn.txt') as data_file:
-#     content = [x.strip() for x in data_file.readlines()]
-#     newtable=""
-#     for i in content:
-#         if len(i)>1:
-#             nl=i.split('\t')[0]
-#             smpa = i.split('\t')[-1]
-#             newtable+="{0:<20}\t{1:<20}\n".format(nl,a.translate(nl))
-#
-# with open(PATH+'/files/out/lijst_Alewijn_sampified.txt','w') as g:
-#     g.write(newtable)
+with open(PATH+'/files/in/lijst_Alewijn_corrected_t_m_q.txt') as data_file:
+    content = [x.strip() for x in data_file.readlines()]
+    newtable_good=""
+    newtable_baad=""
+    for i in content:
+        if len(i)>1:
+            nl=i.split()[0]
+            smpa = i.split()[-1]
+            if smpa == a.translate(nl):
+                newtable_good += "{0:<20}\t{1:<20}\n".format(nl, a.translate(nl))
+            if smpa != a.translate(nl):
+                newtable_baad += "{0:<20}\t{1:<20}\t{2:<20}\n".format(nl, smpa, a.translate(nl))
+
+with open(PATH+'/files/out/lijst_Alewijn_sampified_good.txt','w') as g: g.write(newtable_good)
+with open(PATH+'/files/out/lijst_Alewijn_sampified_bad.txt','w') as g: g.write(newtable_baad)
 
 """
 a=rules()

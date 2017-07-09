@@ -1,7 +1,7 @@
-from classes.sampify import Sampify
-from classes.naf import naf
+from classes.sampify       import Sampify
+from classes.naf           import naf
 from classes.sampa_counter import count
-from config import *
+from config                import *
 
 
 def read_naf():
@@ -19,7 +19,7 @@ def read_naf():
 
 def validate():
     a = Sampify(PATH + '/files/in/RULES werkdocument.xlsx')
-    with open(PATH + '/files/in/lijst_Alewijn_corrected_t_m_q.txt') as data_file:
+    with open(PATH + '/files/in/lijst_Alewijn_corrected.txt') as data_file:
         content = [x.strip() for x in data_file.readlines()]
         new_table_good, new_table_baad = "", ""
         for i in content:
@@ -41,9 +41,9 @@ if __name__ == "__main__":
     for i in count.keys():
         print("{0:<20}\t{1:<20}".format(i, count[i]))
 
-    good,bad=validate()
-    with open(PATH+'/files/out/lijst_Alewijn_sampified_good.txt','w') as g: g.write(good)
-    with open(PATH+'/files/out/lijst_Alewijn_sampified_bad.txt','w') as g: g.write(bad)
+    # good,bad=validate()
+    # with open(PATH+'/files/out/lijst_Alewijn_sampified_good.txt','w') as g: g.write(good)
+    # with open(PATH+'/files/out/lijst_Alewijn_sampified_bad.txt','w') as g: g.write(bad)
 
 """
 a=rules()

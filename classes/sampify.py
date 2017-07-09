@@ -4,7 +4,6 @@ Created on Wed Feb  8 19:35:27 2017
 @author: ruben
 """
 from classes.rules import Rules
-import logging
 
 class Sampify(Rules):
     def _test_case(self, tvl, tvt, r):

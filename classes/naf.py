@@ -4,10 +4,12 @@ Created on Wed Feb  8 19:35:27 2017
 @author: ruben
 """
 import logging, unittest
+
 class naf:
     def __init__(self,f):
-        self.log = logging.getLogger('sampify')
         import xml.etree.ElementTree as et
+
+        self.log = logging.getLogger('sampify')
 
         self.tree  = et.parse(f)
         self.root  = self.tree.getroot()

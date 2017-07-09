@@ -1,8 +1,7 @@
-from classes.sampify       import Sampify
-from classes.naf           import naf
 from classes.sampa_counter import count
-from config                import *
-
+from classes.sampify import Sampify
+from classes.naf import naf
+from config import *
 
 def read_naf():
     a = Sampify(PATH + '/files/in/RULES werkdocument.xlsx')

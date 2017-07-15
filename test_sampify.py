@@ -2,6 +2,7 @@ from classes.sampa_counter import count
 from classes.sampify import Sampify
 from classes.naf import naf
 from config import *
+import codecs
 
 def read_naf():
     a = Sampify(PATH + '/files/in/RULES werkdocument.xlsx')
@@ -18,29 +19,45 @@ def read_naf():
 
 def validate():
     a = Sampify(PATH + '/files/in/RULES werkdocument.xlsx')
-    with open(PATH + '/files/in/lijst_Alewijn_corrected.txt') as data_file:
+    c_ref = count()
+    c_trans = count()
+    with codecs.open(PATH + '/files/in/lijst_Alewijn_corrected.txt', 'r', encoding='UTF-8') as data_file:
         content = [x.strip() for x in data_file.readlines()]
         new_table_good, new_table_baad = "", ""
         for i in content:
             if len(i) > 1:
                 nl = i.split()[0]
                 smpa = i.split()[-1]
+                c_ref.add(smpa)
+                c_trans.add(a.translate(nl))
+
                 if smpa == a.translate(nl):
                     new_table_good += "{0:<20}\t{1:<20}\n".format(nl, a.translate(nl))
                 if smpa != a.translate(nl):
                     new_table_baad += "{0:<20}\t{1:<20}\t{2:<20}\n".format(nl, smpa, a.translate(nl))
 
-    return new_table_good, new_table_baad
+    error_dict={}
+    tot_count=0
+    tot_error=0
+    for i in c_trans.count.keys():
+        abs_error=abs(c_trans.count[i]-c_ref.count[i])
+        tot_count+=c_ref.count[i]
+        tot_error+=abs_error
+
+        error_dict[i]=abs_error
+
+    return new_table_good, new_table_baad, round(1-float(tot_error/tot_count),2)
 
 
 if __name__ == "__main__":
-    words, count = read_naf()
-    for i in words:
-        print("{0:<20}\t{1:<20}".format(i[0], i[1]))
-    for i in count.keys():
-        print("{0:<20}\t{1:<20}".format(i, count[i]))
+    # words, count = read_naf()
+    # for i in words:
+    #     print("{0:<20}\t{1:<20}".format(i[0], i[1]))
+    # for i in count.keys():
+    #     print("{0:<20}\t{1:<20}".format(i, count[i]))
 
-    # good,bad=validate()
+    good,bad,error=validate()
+    print(error)
     # with open(PATH+'/files/out/lijst_Alewijn_sampified_good.txt','w') as g: g.write(good)
     # with open(PATH+'/files/out/lijst_Alewijn_sampified_bad.txt','w') as g: g.write(bad)
 

@@ -4,6 +4,7 @@ Created on Wed Feb  8 19:35:27 2017
 @author: ruben
 """
 from classes.rules import Rules
+import unicodedata
 
 class Sampify(Rules):
     def _test_case(self, tvl, tvt, r):
@@ -100,13 +101,16 @@ class Sampify(Rules):
         return word_l, chlog
 
     def clean(self, w):
-        import unidecode
         # TO DO: remove punctuation
         self.log.info("removing accents")
-        w_noacc=unidecode.unidecode(w.lower())
+        w_noacc=self.strip_accents(w.lower())
         return w_noacc
         #for p in self.settings["punctuation"]:
         #    self.CleanWord = self.CleanWord.replace(p, '')
+
+    def strip_accents(self,s):
+        return ''.join(c for c in unicodedata.normalize('NFD', s)
+                       if unicodedata.category(c) != 'Mn')
 
     def translate(self, word):
         self.log.info("starting sampyfication of word '{0}'".format(word))

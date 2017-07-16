@@ -92,6 +92,4 @@ ENV/
 .idea/
 
 #logs
-files/log/
-files/out/
-files/in/
+files

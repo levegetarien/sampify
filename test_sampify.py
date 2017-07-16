@@ -35,32 +35,25 @@ def validate():
                 if smpa != a.translate(nl): new_table_baad += "{0:<20}\t{1:<20}\t{2:<20}\n".format(nl, smpa, a.translate(nl))
 
     c=compare(c_ref)
-    print_errors(c,c_trans,c.all,"alle letters")
-    c=compare(c_ref)
-    print_errors(c,c_trans,c.vowels,"alle klinkers")
-    c=compare(c_ref)
-    print_errors(c,c_trans,c.consonnants,"alle medeklinkers")
-    c=compare(c_ref)
-    print_errors(c,c_trans,c.fricatives,"alle fricativen")
-    c=compare(c_ref)
-    print_errors(c,c_trans,c.plosives,"alle plosiven")
-    c=compare(c_ref)
-    print_errors(c,c_trans,c.sonorants,"alle sonoranten")
-    c=compare(c_ref)
-    print_errors(c,c_trans,c.checked,"alle gesloten")
-    c=compare(c_ref)
-    print_errors(c,c_trans,c.potential_diphthongs,"alle potentiele diphtongen")
-    c=compare(c_ref)
-    print_errors(c,c_trans,c.essential_diphthongs,"alle essentiele diphtongen")
-    c=compare(c_ref)
-    print_errors(c,c_trans,c.others,"alle andere klinkers")
+    print_errors(c_ref,c_trans,c.all,"alle letters")
+    print_errors(c_ref,c_trans,c.vowels,"alle klinkers")
+    print_errors(c_ref,c_trans,c.consonnants,"alle medeklinkers")
+    print_errors(c_ref,c_trans,c.fricatives,"alle fricativen")
+    print_errors(c_ref,c_trans,c.plosives,"alle plosiven")
+    print_errors(c_ref,c_trans,c.sonorants,"alle sonoranten")
+    print_errors(c_ref,c_trans,c.checked,"alle gesloten")
+    print_errors(c_ref,c_trans,c.potential_diphthongs,"alle potentiele diphtongen")
+    print_errors(c_ref,c_trans,c.essential_diphthongs,"alle essentiele diphtongen")
+    print_errors(c_ref,c_trans,c.others,"alle andere klinkers")
 
     return new_table_good, new_table_baad
 
-def print_errors(c,test,group,name):
-    c.add(test,group)
-    bad,tot=c.get_score()
+def print_errors(c_ref,test,group,name):
+    a = compare(c_ref)
+    a.add(test,group)
+    bad,tot=a.get_score()
     print("{0:<40}\t errors:{1:7.2f}%\t (N={2:5d})".format(name,float(bad/tot)*100,tot))
+    del a
 
 
 

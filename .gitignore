@@ -94,3 +94,4 @@ ENV/
 #logs
 files/log/
 files/out/
+files/inp/

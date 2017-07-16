@@ -47,6 +47,36 @@ class TestCount(unittest.TestCase):
     def test_count_double(self):
         self.assertEqual(self.c.count['Ei'],2, "Incorrect number of 'Ei' counted")
 
+class compare:
+    def __init__(self,ref):
+        self.plosives=["p", "b", "t", "d", "k", "g"]
+        self.fricatives=["f", "v", "s", "z","x", "G", "h", "z", "S"]
+        self.sonorants=["m", "n", "N", "l", "r", "w", "j"]
+        self.consonnants=self.plosives+self.fricatives+self.sonorants
+
+        self.checked=["I", "E", "A", "O", "Y", "@"]
+        self.monophthongs=["i", "y", "u", "a:"]
+        self.potential_diphthongs=["e:", "2:", "o:"]
+        self.essential_diphthongs=["Ei", "9y", "Au"]
+        self.diphthongs=[]#        "a:i", "o:i", "ui", "iu", "yu", "e:u"
+        self.others=["E:", "9:", "O:", "A*", "E*", "O*"]
+        self.vowels=self.checked+self.monophthongs+self.potential_diphthongs+self.essential_diphthongs+self.diphthongs+self.others
+
+        self.all=self.consonnants+self.vowels
+
+        self.ref=ref
+
+        self.error=0
+        self.total=0
+
+    def add(self,test,list):
+        for i in list:
+            self.error+=abs(self.ref.count[i]-test.count[i])
+            self.total+=self.ref.count[i]
+
+    def get_score(self):
+        return self.error, self.total
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

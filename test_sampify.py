@@ -1,4 +1,4 @@
-from classes.sampa_counter import count
+from classes.sampa_counter import count,compare
 from classes.sampify import Sampify
 from classes.naf import naf
 from config import *
@@ -31,22 +31,37 @@ def validate():
                 c_ref.add(smpa)
                 c_trans.add(a.translate(nl))
 
-                if smpa == a.translate(nl):
-                    new_table_good += "{0:<20}\t{1:<20}\n".format(nl, a.translate(nl))
-                if smpa != a.translate(nl):
-                    new_table_baad += "{0:<20}\t{1:<20}\t{2:<20}\n".format(nl, smpa, a.translate(nl))
+                if smpa == a.translate(nl): new_table_good += "{0:<20}\t{1:<20}\n".format(nl, a.translate(nl))
+                if smpa != a.translate(nl): new_table_baad += "{0:<20}\t{1:<20}\t{2:<20}\n".format(nl, smpa, a.translate(nl))
 
-    error_dict={}
-    tot_count=0
-    tot_error=0
-    for i in c_trans.count.keys():
-        abs_error=abs(c_trans.count[i]-c_ref.count[i])
-        tot_count+=c_ref.count[i]
-        tot_error+=abs_error
+    c=compare(c_ref)
+    print_errors(c,c_trans,c.all,"alle letters")
+    c=compare(c_ref)
+    print_errors(c,c_trans,c.vowels,"alle klinkers")
+    c=compare(c_ref)
+    print_errors(c,c_trans,c.consonnants,"alle medeklinkers")
+    c=compare(c_ref)
+    print_errors(c,c_trans,c.fricatives,"alle fricativen")
+    c=compare(c_ref)
+    print_errors(c,c_trans,c.plosives,"alle plosiven")
+    c=compare(c_ref)
+    print_errors(c,c_trans,c.sonorants,"alle sonoranten")
+    c=compare(c_ref)
+    print_errors(c,c_trans,c.checked,"alle gesloten")
+    c=compare(c_ref)
+    print_errors(c,c_trans,c.potential_diphthongs,"alle potentiele diphtongen")
+    c=compare(c_ref)
+    print_errors(c,c_trans,c.essential_diphthongs,"alle essentiele diphtongen")
+    c=compare(c_ref)
+    print_errors(c,c_trans,c.others,"alle andere klinkers")
 
-        error_dict[i]=abs_error
+    return new_table_good, new_table_baad
 
-    return new_table_good, new_table_baad, round(1-float(tot_error/tot_count),2)
+def print_errors(c,test,group,name):
+    c.add(test,group)
+    bad,tot=c.get_score()
+    print("{0:<40}\t errors:{1:7.2f}%\t (N={2:5d})".format(name,float(bad/tot)*100,tot))
+
 
 
 if __name__ == "__main__":
@@ -56,40 +71,6 @@ if __name__ == "__main__":
     # for i in count.keys():
     #     print("{0:<20}\t{1:<20}".format(i, count[i]))
 
-    good,bad,error=validate()
-    print(error)
+    good,bad=validate()
     # with open(PATH+'/files/out/lijst_Alewijn_sampified_good.txt','w') as g: g.write(good)
     # with open(PATH+'/files/out/lijst_Alewijn_sampified_bad.txt','w') as g: g.write(bad)
-
-"""
-a=rules()
-a.add_rules(fromfile='rules.xlsx')
-a._write_json('test1.json')
-b=rules()
-b.add_rules(fromfile='rules4.csv')
-b._write_json('test2.json')
-"""
-"""
-a=rules()
-a.add_rules('rules.json')
-a.add_rules('rules.csv')
-a.add_rules(fromline=True)
-print(a.rules['V']['y']['default'])
-"""
-"""
-a=make_sampa()
-a.add_rules('rules.json')
-a.rules['V']['aa']=a.rules["V"].pop('a')
-a.rules.pop('P')
-print(a.rules)
-a._quality_check(a.rules)
-"""
-"""
-a._write_json('test.json')
-for i in ['boocabt','boocaboo','boocab']: print("{0:<10} --> {1}".format(i,a.sampify(i)))
-"""
-"""
-#b=make_sampa('/Users/*/Dropbox/sampify_autom_rules_test/rules.csv')
-#b.write_json('/Users/*/Dropbox/sampify_autom_rules_test/rules_from_csv_2.json')
-#for i in ['baco']: print("{0:<10} --> {1}".format(i,b.sampify(i)))
-"""

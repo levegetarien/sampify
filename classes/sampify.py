@@ -4,7 +4,7 @@ Created on Wed Feb  8 19:35:27 2017
 @author: ruben
 """
 from classes.rules import Rules
-import logging
+import unicodedata
 
 class Sampify(Rules):
     def _test_case(self, tvl, tvt, r):
@@ -49,20 +49,14 @@ class Sampify(Rules):
     def _find_rule(self, wl, tl, Nsyllab, position, rules):
         if position == 0 and wl[0] in rules['P'].keys():
             for i in sorted(rules['P'][wl[position]]['rules'].keys()):
-                self.log.info("testing prefix rule {0} of group {1}, letter {2}".format(i, 'P', wl[position]))
-                if self._test_rule(wl, tl, Nsyllab, rules['P'][wl[position]]['rules'][i], position, i): return i, rules[
-                    'P'][wl[position]]['rules'][i]
+                self.log.info("testing prefix rule {0}:{1}:{2}".format('P', wl[position], i))
+                if self._test_rule(wl, tl, Nsyllab, rules['P'][wl[position]]['rules'][i], position, i):
+                    return i, rules['P'][wl[position]]['rules'][i]
         for i in sorted(rules[tl[position]][wl[position]]['rules'].keys()):
-            self.log.info("testing rule {0} of group {1}, letter {2}".format(i, tl[position], wl[position]))
-            if self._test_rule(wl, tl, Nsyllab, rules[tl[position]][wl[position]]['rules'][i], position, i): return i, \
-                                                                                                                    rules[
-                                                                                                                        tl[
-                                                                                                                            position]][
-                                                                                                                        wl[
-                                                                                                                            position]][
-                                                                                                                        'rules'][
-                                                                                                                        i]
-        self.log.info("no rule found, default rule is used")
+            self.log.info("testing rule {0}:{1}:{2}".format(tl[position], wl[position], i))
+            if self._test_rule(wl, tl, Nsyllab, rules[tl[position]][wl[position]]['rules'][i], position, i):
+                return i,rules[tl[position]][wl[position]]['rules'][i]
+        self.log.info("no rule found, default rule is used: {0}:{1}:{2}".format(tl[position],wl[position],0))
         return 0, rules[tl[position]][wl[position]]['default'][0]
 
     def _apply_rule(self, log, sampa, position, rule, rulenum):
@@ -78,13 +72,12 @@ class Sampify(Rules):
     def _find_apply(self, log, word, syllables, rules):
         for i in range(len(log)):
             if log[i] != 'S':
-                self.log.info("searching applicable rule for position {0} of '{1}'".format(i, "".join(word)))
+                self.log.info("Searching applicable rule for position {0} of '{1}'".format(i, "".join(word)))
                 applicable_rule_n, applicable_rule = self._find_rule(word, log, syllables, i, rules)
                 log, word = self._apply_rule(log, word, i, applicable_rule, applicable_rule_n)
                 return log, word
 
     def _num_syll(self, l):
-        self.log.info("counting syllables in word")
         if l[0] == 'C':
             vow, lettergrepen = False, 0
         else:
@@ -92,7 +85,7 @@ class Sampify(Rules):
         for i in range(1, len(l)):
             if l[i] == 'C' and vow == True:  vow = False
             if l[i] == 'V' and vow == False: vow, lettergrepen = True, lettergrepen + 1
-        self.log.info("{0} syllables counted".format(lettergrepen))
+        self.log.info("Counting syllables in word, found {0}".format(lettergrepen))
         return lettergrepen
 
     def _gen_chlog(self, word):
@@ -108,13 +101,16 @@ class Sampify(Rules):
         return word_l, chlog
 
     def clean(self, w):
-        import unidecode
         # TO DO: remove punctuation
         self.log.info("removing accents")
-        w_noacc=unidecode.unidecode(w.lower())
+        w_noacc=self.strip_accents(w.lower())
         return w_noacc
         #for p in self.settings["punctuation"]:
         #    self.CleanWord = self.CleanWord.replace(p, '')
+
+    def strip_accents(self,s):
+        return ''.join(c for c in unicodedata.normalize('NFD', s)
+                       if unicodedata.category(c) != 'Mn')
 
     def translate(self, word):
         self.log.info("starting sampyfication of word '{0}'".format(word))

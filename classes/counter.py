@@ -4,7 +4,7 @@ Created on Wed Feb  8 19:35:27 2017
 @author: ruben
 """
 import logging, unittest
-class count:
+class countSampa:
     sampa_double = ["a:", "e:", "2:", "o:", "Ei", "9y", "Au", "E:", "9:", "O:", "A*", "E*", "O*"]
     sampa_single = ["I", "E", "A", "O", "Y", "@", "i", "y", "u", "p", "b", "t", "d", "k", "g", "f", "v", "s", "z",
                          "x", "G", "h", "z", "S", "m", "n", "N", "l", "r", "w", "j"]
@@ -13,6 +13,9 @@ class count:
         self.log = logging.getLogger('sampify')
         self.sampa=double+single
         self.count=dict.fromkeys(self.sampa,0)
+
+    def sampaCount(self):
+        return self.count
 
     def add(self,w):
         self.log.info("adding {0} to counter".format(w))
@@ -30,10 +33,40 @@ class count:
                 self.log.warning("no corresponding SAMPA found for {0}, removing letter".format(wordlist[0]))
                 wordlist = wordlist[1:]
 
+class countEmotions:
+    def __init__(self):
+        self.log = logging.getLogger('sampify')
+        self.emotions=['love', 'joy', 'desire', 'hope', 'compassion', 'happiness', 'honor', 'loyalty', 'wonder', 'moved', 'aquiescence', 'benevolence', 'pride', 'dedication', 'trust', 'awe', 'relief', 'sadness', 'fear', 'anger', 'despair', 'vindictiveness', 'hatred', 'remorse', 'worry', 'shame', 'heavyHeartedness', 'disgust', 'spitefulness', 'annoyance', 'envy', 'suspicion', 'offended', 'unhappiness', 'dissapointment', 'greed', 'loss', 'other','unknown']
+        self.clusters=['sadness', 'love', 'anger', 'fear', 'joy', 'desire', 'despair', 'disgust', 'posSentiments', 'compassion', 'prideHonour', 'other','unknown']
+        self.count={
+            'emotions':dict.fromkeys(self.emotions, 0),
+            'clusters':dict.fromkeys(self.clusters, 0)
+        }
+
+    def addEmotion(self,e):
+        if e in self.count['emotions']:
+            self.count['emotions'][e]+=1
+            self.log.info('added 1 to count of emotion {0} (was {1})'.format(e,self.count['emotions'][e]-1))
+        else:
+            self.count['emotions']['unknown'] += 1
+            self.log.warning('unknown emotion, count added to unknown')
+    def addCluster(self,c):
+        if c in self.count['clusters']:
+            self.count['clusters'][c]+=1
+            self.log.info('added 1 to count of cluster {0} (was {1})'.format(c,self.count['clusters'][c]-1))
+        else:
+            self.count['clusters']['unknown'] += 1
+            self.log.warning('unknown cluster, count added to unknown')
+    def emotionCount(self):
+        return self.count['emotions']
+    def clusterCount(self):
+        return self.count['clusters']
+
+
 class TestCount(unittest.TestCase):
 
     def setUp(self):
-        self.c = count()
+        self.c = countSampa()
         self.c.add("SEiyEiN")
 
     def tearDown(self):

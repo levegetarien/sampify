@@ -4,43 +4,61 @@ Created on Wed Feb  8 19:35:27 2017
 @author: ruben
 """
 import logging, unittest
+from classes.sampify import Sampify
+from classes.counter import countSampa
+from classes.counter import countEmotions
 
 class naf:
-    def __init__(self,f):
+    def __init__(self,f,th=0.5):
         import xml.etree.ElementTree as et
 
         self.log = logging.getLogger('sampify')
 
-        self.tree       = et.parse(f)
-        self.root       = self.tree.getroot()
-        self.text       = [i for i in self.root.iter() if i.tag == 'text'][0]
-        self.terms      = [i for i in self.root.iter() if i.tag == 'terms'][0]
-        self.emo        = [i for i in self.root.iter() if i.tag == 'emotions'][0]
+        self.tree  = et.parse(f)
+        self.root  = self.tree.getroot()
+
         self.log.info("reading words from {0}".format(f))
-        self.words      = [word(i)  for i in self.text.iter()  if i.tag == 'wf']
-        self.lemmas     = [lemma(i) for i in self.terms]
-        self.emolist    = [emotions(i) for i in self.emo if i.tag == 'emotion']
 
-        lemmaByID={i.getTargetID():i for i in self.lemmas}
-        self.emolistID  = [i.getID() for i in self.emolist]
+        self.WordList  = [word(i)  for i in self.root.find('text').findall('wf')]
+        self.lemmas = [lemma(i) for i in self.root.find('terms')]
+        self.emolist= [emotions(i,th) for i in self.root.find('emotions') if i.tag == 'emotion']
 
-        for i in self.words:
-            if i.getID() in lemmaByID.keys():
-                i.addLemma(lemmaByID[i.getID()])
-            for j in range(len(self.emolistID)):
-                if i.getLemmaID() in self.emolistID[j]:
-                    i.addEmotions(self.emolist[j])
-                    break
+        self.countSampa = countSampa()
+        self.countEmotions = countEmotions()
 
-        # for i in self.words:
-        #     if i.isNotPunctuation() and i.getEmotions():
-        #         for j in i.getEmotions().getEmotions():
-        #             print(i.getWord(), j.getReference())
+        lemmaByID={i.TargetID():i for i in self.lemmas}
+        emolistByID={j:i for i in self.emolist for j in i.ID()}
+
+        for i in self.WordList:
+            if i.WordID() in lemmaByID.keys():
+                i.addLemma(lemmaByID[i.WordID()])
+            if i.LemmaID() in  emolistByID.keys():
+                i.addEmotions(emolistByID[i.LemmaID()])
+
+    def translate(self,a):
+        for i in self.WordList:
+            if i.isNotPunctuation():
+                sampa=a.translate(i.Word())
+                i.addSampa(sampa)
+
+    def doCount(self,countSampa=True,countClusters=True,countEmotions=True):
+        for i in self.WordList:
+            if countSampa and i.Sampa():
+                self.countSampa.add(i.Sampa())
+            if (countEmotions or countClusters) and i.EmotionList():
+                if countEmotions:
+                    for j in i.EmotionList().Emotion():
+                        self.countEmotions.addEmotion(j.Reference())
+                if countClusters:
+                    for j in i.EmotionList().Cluster():
+                        self.countEmotions.addCluster(j.Reference())
+
+
 
     def get_wordlist(self, RemovePunctuation=True):
         if RemovePunctuation:
-            return [i.getWord() for i in self.words if i.isNotPunctuation()]
-        return [i.getWord() for i in self.words]
+            return [i.Word() for i in self.WordList if i.isNotPunctuation()]
+        return [i.Word() for i in self.WordList]
 
 class emotion:
     def __init__(self,e):
@@ -89,11 +107,11 @@ class emotion:
             'reference':e.attrib['reference'].split(':')[1],
             'pos/neg':self.posnegClass[e.attrib['reference'].split(':')[1]]
         }
-    def getConfidence(self):
+    def Confidence(self):
         return self.properties['confidence']
-    def getReference(self):
+    def Reference(self):
         return self.properties['reference']
-    def getPosNeg(self):
+    def PosNeg(self):
         return self.properties['pos/neg']
 
 class emotion_clsuter:
@@ -117,11 +135,11 @@ class emotion_clsuter:
             'reference':c.attrib['reference'],
             'pos/neg':self.posnegClass[c.attrib['reference']]
         }
-    def getConfidence(self):
+    def Confidence(self):
         return self.properties['confidence']
-    def getReference(self):
+    def Reference(self):
         return self.properties['reference']
-    def getPosNeg(self):
+    def PosNeg(self):
         return self.properties['pos/neg']
 
 class emotions:
@@ -142,12 +160,12 @@ class emotions:
                 self.properties['emotions'].append(emotion(i))
     def setThreshold(self,th):
         self.properties['threshold']=th
-    def getID(self):
+    def ID(self):
         return self.properties['ID']
-    def getEmotions(self):
-        return [i for i in self.properties['emotions'] if i.getConfidence()>= self.properties['threshold']]
-    def getClusters(self):
-        return [i for i in self.properties['clusters'] if i.getConfidence()>= self.properties['threshold']]
+    def Emotion(self):
+        return [i for i in self.properties['emotions'] if i.Confidence()>= self.properties['threshold']]
+    def Cluster(self):
+        return [i for i in self.properties['clusters'] if i.Confidence()>= self.properties['threshold']]
 
 class lemma:
     def __init__(self,t):
@@ -158,13 +176,13 @@ class lemma:
             'type':t.attrib['type'],
             'targetID':t.find('span').find('target').attrib['id']
         }
-    def getTargetID(self):
+    def TargetID(self):
         return self.properties['targetID']
-    def getID(self):
+    def ID(self):
         return self.properties['ID']
-    def getLemma(self):
+    def Lemma(self):
         return self.properties['lemma']
-    def getPos(self):
+    def Pos(self):
         return self.properties['pos']
 
 class word:
@@ -175,40 +193,53 @@ class word:
             'length': int(w.attrib['length']),
             'offset': int(w.attrib['offset']),
             'sentence': int(w.attrib['sent']),
-            'punctuation':[',', ';', '.', '?', "'", '!' '‘', '&'],
+            'punctuation':[',', ';', '.', '?', "'", '!' '‘', '&', '-',':'],
             'lemma':None,
             'lemmaID':None,
-            'emotions':None
+            'emotions':None,
+            'sampa':None
         }
-    def getWord(self):
-        return self.properties['word']
-    def getID(self):
-        return self.properties['ID']
     def isNotPunctuation(self):
-        if self.properties['word'] not in self.properties['punctuation']:
-            return True
-        return False
+        if self.properties['word'] in self.properties['punctuation']:
+            return False
+        return True
     def addLemma(self,l):
         self.properties['lemma']=l
-        self.properties['lemmaID']=l.getID()
+        self.properties['lemmaID']=l.ID()
     def addEmotions(self,e):
         self.properties['emotions']=e
-    def getEmotions(self):
+    def addSampa(self,s):
+        self.properties['sampa']=s
+    def Word(self):
+        return self.properties['word']
+    def WordID(self):
+        return self.properties['ID']
+    def EmotionList(self):
         return self.properties['emotions']
-    def getLemma(self):
+    def Lemma(self):
         return self.properties['lemma']
-    def getLemmaID(self):
+    def LemmaID(self):
         return self.properties['lemmaID']
+    def Sampa(self):
+        return self.properties['sampa']
 
 class TestNaf(unittest.TestCase):
     def setUp(self):
-        self.n = naf("/Users/ruben/Projects/Sampify/files/lope001dull01_01.xml")
+        self.n = naf("/Users/ruben/Projects/Sampify/files/lope001dull01_01.xml",0)
+        self.a = Sampify("/Users/ruben/Projects/Sampify/files/RULES werkdocument.xlsx")
+        self.n.translate(self.a)
     def tearDown(self):
         del self.n
-    def test_firstword(self):
+    def test_words(self):
         self.assertEqual(self.n.get_wordlist()[0], "Stryt", "Incorrect first word")
-    def test_isupper(self):
         self.assertEqual(self.n.get_wordlist()[-1], "UYT", "Incorrect last word")
+    def test_emotion(self):
+        self.assertEqual(self.n.WordList[0].EmotionList(), None, "Incorrect first word")
+        self.assertEqual(self.n.WordList[70].EmotionList().Emotion()[0].Reference(), 'loyalty', "Incorrect first word")
+        self.assertEqual(self.n.WordList[70].EmotionList().Emotion()[1].Reference(), 'sadness', "Incorrect first word")
+    def test_sampa(self):
+        self.assertEqual(self.n.WordList[0].Sampa(), "strit", "Incorrect first word")
+        self.assertEqual(self.n.WordList[-2].Sampa(), "Yit", "Incorrect last word")
 
 if __name__ == "__main__":
     unittest.main()

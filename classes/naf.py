@@ -12,12 +12,13 @@ class naf:
     def __init__(self,f,th=0.5):
         import xml.etree.ElementTree as et
 
-        self.log = logging.getLogger('sampify')
+        self.debug = logging.getLogger('debugLog')
+        self.stdout  = logging.getLogger('stdoutLog')
 
         self.tree  = et.parse(f)
         self.root  = self.tree.getroot()
 
-        self.log.info("reading words from {0}".format(f))
+        self.debug.debug("reading words from {0}".format(f))
 
         self.WordList  = [word(i)  for i in self.root.find('text').findall('wf')]
         self.lemmas = [lemma(i) for i in self.root.find('terms')]

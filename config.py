@@ -1,6 +1,13 @@
 import logging,sys
 
 # global settings
+def addStreamToLogger(log,file=False,level=logging.DEBUG):
+    stream = logging.StreamHandler(sys.stdout)
+    if file: stream=logging.FileHandler(file,encoding='utf-8')
+    stream.setLevel(level)
+    stream.setFormatter(logging.Formatter(u'[%(asctime)s] [%(module)11s] [%(funcName)11s] [%(lineno)3s] [%(levelname)8s] - %(message)s',"%Y-%m-%d %H:%M:%S"))
+    log.addHandler(stream)
+
 globalSettings={
     'RULES': {
         'RULES A': '/Users/ruben/Projects/Sampify/files/RULES werkdocument.xlsx',
@@ -8,38 +15,20 @@ globalSettings={
         'RULES C': '/Users/ruben/Projects/Sampify/files/RULES werkdocument.xlsx',
         'RULES D': '/Users/ruben/Projects/Sampify/files/RULES werkdocument.xlsx'
     },
-    'LOGGER': 'sampify',
-    'PATH': '/Users/ruben/Projects/Sampify',
-    'LOG': '/Users/ruben/Projects/Sampify/files/log/log_dictionary_test.txt',
-    'WRN': '/Users/ruben/Projects/Sampify/files/log/wrn_dictionary_test.txt',
+    'PATH':        '/Users/ruben/Projects/Sampify',
+    'OUTPATH':     '/Users/ruben/Projects/Sampify/files/out',
+    'DEBUG':       '/Users/ruben/Projects/Sampify/files/log/debug_dictionary_test.txt',
+    'WARNING':     '/Users/ruben/Projects/Sampify/files/log/warning_dictionary_test.txt',
     'textSettings':'/Users/ruben/Projects/Sampify/files/Toneel_settings.xlsx'
 }
 
+debugLog = logging.getLogger('debugLog')
+debugLog.setLevel(logging.WARNING)
+addStreamToLogger(debugLog,file=globalSettings['DEBUG'],level=logging.DEBUG)
+addStreamToLogger(debugLog,file=globalSettings['WARNING'],level=logging.WARNING)
 
-logger = logging.getLogger(globalSettings['LOGGER'])
-logger.setLevel(logging.DEBUG)
-
-fh1 = logging.FileHandler(globalSettings['LOG'],encoding='utf-8')
-fh2 = logging.FileHandler(globalSettings['WRN'],encoding='utf-8')
-fh1.setLevel(logging.DEBUG)
-fh2.setLevel(logging.WARN)
-fh1.setFormatter(
-    logging.Formatter(u'[%(asctime)s] [%(module)11s] [%(funcName)11s] [%(lineno)3s] [%(levelname)8s] - %(message)s',
-                      "%Y-%m-%d %H:%M:%S"))
-fh2.setFormatter(
-    logging.Formatter(u'[%(asctime)s] [%(module)11s] [%(funcName)11s] [%(lineno)3s] [%(levelname)8s] - %(message)s',
-                      "%Y-%m-%d %H:%M:%S"))
-logger.addHandler(fh1)
-logger.addHandler(fh2)
-
-stdoutlogger = logging.getLogger('stdout')
-stdoutlogger.setLevel(logging.DEBUG)
-
-sh = logging.StreamHandler(sys.stdout)
-sh.setLevel((logging.DEBUG))
-sh.setFormatter(
-    logging.Formatter(u'[%(asctime)s] [%(module)11s] [%(funcName)11s] [%(lineno)3s] [%(levelname)8s] - %(message)s',
-                      "%Y-%m-%d %H:%M:%S"))
-stdoutlogger.addHandler(sh)
+stdoutLog = logging.getLogger('stdoutLog')
+stdoutLog.setLevel(logging.DEBUG)
+addStreamToLogger(stdoutLog,level=logging.DEBUG)
 
 

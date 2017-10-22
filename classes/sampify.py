@@ -41,22 +41,22 @@ class Sampify(Rules):
             else:
                 all_outcomes.append(self._test_case(wl[position:][i], tl[position:][i], rule['rule'][i]))
         if False not in all_outcomes:
-            self.log.info("rule {0} is matching".format(rulenumber))
+            self.debug.debug("rule {0} is matching".format(rulenumber))
             return True
-        self.log.info("rule {0} is not matching".format(rulenumber))
+        self.debug.debug("rule {0} is not matching".format(rulenumber))
         return False
 
     def _find_rule(self, wl, tl, Nsyllab, position, rules):
         if position == 0 and wl[0] in rules['P'].keys():
             for i in sorted(rules['P'][wl[position]]['rules'].keys()):
-                self.log.info("testing prefix rule {0}:{1}:{2}".format('P', wl[position], i))
+                self.debug.debug("testing prefix rule {0}:{1}:{2}".format('P', wl[position], i))
                 if self._test_rule(wl, tl, Nsyllab, rules['P'][wl[position]]['rules'][i], position, i):
                     return i, rules['P'][wl[position]]['rules'][i]
         for i in sorted(rules[tl[position]][wl[position]]['rules'].keys()):
-            self.log.info("testing rule {0}:{1}:{2}".format(tl[position], wl[position], i))
+            self.debug.debug("testing rule {0}:{1}:{2}".format(tl[position], wl[position], i))
             if self._test_rule(wl, tl, Nsyllab, rules[tl[position]][wl[position]]['rules'][i], position, i):
                 return i,rules[tl[position]][wl[position]]['rules'][i]
-        self.log.info("no rule found, default rule is used: {0}:{1}:{2}".format(tl[position],wl[position],0))
+        self.debug.debug("no rule found, default rule is used: {0}:{1}:{2}".format(tl[position],wl[position],0))
         return 0, rules[tl[position]][wl[position]]['default'][0]
 
     def _apply_rule(self, log, sampa, position, rule, rulenum):
@@ -64,7 +64,7 @@ class Sampify(Rules):
         lensrce, lendest = len(srce), len(dest)
         olog = log[:position] + ['S'] * lendest + log[position + lensrce:]
         osampa = sampa[:position] + dest + sampa[position + lensrce:]
-        self.log.info(
+        self.debug.debug(
             "rule {0} applied to sampa '{1}' on position {2}. Output: '{3}'".format(rulenum, "".join(sampa), position,
                                                                                     "".join(osampa)))
         return olog, osampa
@@ -72,7 +72,7 @@ class Sampify(Rules):
     def _find_apply(self, log, word, syllables, rules):
         for i in range(len(log)):
             if log[i] != 'S':
-                self.log.info("Searching applicable rule for position {0} of '{1}'".format(i, "".join(word)))
+                self.debug.debug("Searching applicable rule for position {0} of '{1}'".format(i, "".join(word)))
                 applicable_rule_n, applicable_rule = self._find_rule(word, log, syllables, i, rules)
                 log, word = self._apply_rule(log, word, i, applicable_rule, applicable_rule_n)
                 return log, word
@@ -85,7 +85,7 @@ class Sampify(Rules):
         for i in range(1, len(l)):
             if l[i] == 'C' and vow == True:  vow = False
             if l[i] == 'V' and vow == False: vow, lettergrepen = True, lettergrepen + 1
-        self.log.info("Counting syllables in word, found {0}".format(lettergrepen))
+        self.debug.debug("Counting syllables in word, found {0}".format(lettergrepen))
         return lettergrepen
 
     def _gen_chlog(self, word):
@@ -97,12 +97,12 @@ class Sampify(Rules):
                 chlog.append('C')
             else:
                 chlog.append('S')
-                self.log.warning("Unknown letter: '{0}'. Letter will not be translated.".format(i))
+                self.debug.warning("Unknown letter: '{0}'. Letter will not be translated.".format(i))
         return word_l, chlog
 
     def clean(self, w):
         # TO DO: remove punctuation
-        self.log.info("removing accents")
+        self.debug.debug("removing accents")
         w_noacc=self.strip_accents(w.lower())
         return w_noacc
         #for p in self.settings["punctuation"]:
@@ -113,12 +113,12 @@ class Sampify(Rules):
                        if unicodedata.category(c) != 'Mn')
 
     def translate(self, word):
-        self.log.info("starting sampyfication of word '{0}'".format(word))
+        self.debug.debug("starting sampyfication of word '{0}'".format(word))
         word_clean=self.clean(word)
         word_l, chlog = self._gen_chlog(word_clean)
         syllables = self._num_syll(chlog)
         while 'V' in chlog or 'C' in chlog: chlog, word_l = self._find_apply(chlog, word_l, syllables, self.rules)
-        self.log.info("word '{0}' successfully sampified: '{1}'".format(word, "".join(word_l)))
+        self.debug.debug("word '{0}' successfully sampified: '{1}'".format(word, "".join(word_l)))
         return "".join(word_l)
 
 

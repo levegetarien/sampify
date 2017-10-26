@@ -20,16 +20,16 @@ class countSampa:
         return self.count
 
     def add(self,w):
-        self.debug.debug("adding {0} to counter".format(w))
+        self.debug.info("adding {0} to counter".format(w))
         wordlist=list(w)
         while len(wordlist)>0:
             if len(wordlist)>1 and wordlist[0]+wordlist[1] in self.sampa_double:
                 self.count[wordlist[0]+wordlist[1]]=self.count[wordlist[0]+wordlist[1]]+1
-                self.debug.debug("found {0}, adding 1 to total count (was {1})".format(wordlist[0]+wordlist[1], self.count[wordlist[0]+wordlist[1]]-1))
+                self.debug.info("found {0}, adding 1 to total count (was {1})".format(wordlist[0]+wordlist[1], self.count[wordlist[0]+wordlist[1]]-1))
                 wordlist=wordlist[2:]
             elif wordlist[0] in self.sampa_single:
                 self.count[wordlist[0]]=self.count[wordlist[0]]+1
-                self.debug.debug("found {0}, adding 1 to total count (was {1})".format(wordlist[0], self.count[wordlist[0]]-1))
+                self.debug.info("found {0}, adding 1 to total count (was {1})".format(wordlist[0], self.count[wordlist[0]]-1))
                 wordlist=wordlist[1:]
             else:
                 self.debug.warning("no corresponding SAMPA found for {0}, removing letter".format(wordlist[0]))
@@ -50,17 +50,17 @@ class countEmotions:
     def addEmotion(self,e):
         if e in self.count['emotions']:
             self.count['emotions'][e]+=1
-            self.debug.debug('added 1 to count of emotion {0} (was {1})'.format(e,self.count['emotions'][e]-1))
+            self.debug.info('added 1 to count of emotion {0} (was {1})'.format(e,self.count['emotions'][e]-1))
         else:
             self.count['emotions']['unknown'] += 1
-            self.debug.warning('unknown emotion, count added to unknown')
+            self.debug.info('unknown emotion, count added to unknown')
     def addCluster(self,c):
         if c in self.count['clusters']:
             self.count['clusters'][c]+=1
-            self.debug.debug('added 1 to count of cluster {0} (was {1})'.format(c,self.count['clusters'][c]-1))
+            self.debug.info('added 1 to count of cluster {0} (was {1})'.format(c,self.count['clusters'][c]-1))
         else:
             self.count['clusters']['unknown'] += 1
-            self.debug.warning('unknown cluster, count added to unknown')
+            self.debug.info('unknown cluster, count added to unknown')
     def emotionCount(self):
         return self.count['emotions']
     def clusterCount(self):

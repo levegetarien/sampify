@@ -19,11 +19,13 @@ class naf:
         self.root  = self.tree.getroot()
 
         self.debug.debug("reading words from {0}".format(f))
-
         self.WordList  = [word(i)  for i in self.root.find('text').findall('wf')]
+        self.debug.debug("reading lemmas from {0}".format(f))
         self.lemmas = [lemma(i) for i in self.root.find('terms')]
+        self.debug.debug("reading emotions from {0}".format(f))
         self.emolist= [emotions(i,th) for i in self.root.find('emotions') if i.tag == 'emotion']
 
+        self.debug.debug("initialising counters")
         self.countSampa = countSampa()
         self.countEmotions = countEmotions()
 
@@ -32,17 +34,21 @@ class naf:
 
         for i in self.WordList:
             if i.WordID() in lemmaByID.keys():
+                self.debug.debug("adding lemma for {0}".format(i.Word()))
                 i.addLemma(lemmaByID[i.WordID()])
             if i.LemmaID() in  emolistByID.keys():
+                self.debug.debug("adding emotions for {0}".format(i.Word()))
                 i.addEmotions(emolistByID[i.LemmaID()])
 
     def translate(self,a):
+        self.debug.debug("translating all words")
         for i in self.WordList:
             if i.isNotPunctuation():
                 sampa=a.translate(i.Word())
                 i.addSampa(sampa)
 
     def doCount(self,countSampa=True,countClusters=True,countEmotions=True):
+        self.debug.debug("counting sampa, emotions and/or clusters")
         for i in self.WordList:
             if countSampa and i.Sampa():
                 self.countSampa.add(i.Sampa())

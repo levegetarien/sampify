@@ -19,7 +19,7 @@ globalSettings={
     'OUTPATH':     '/Users/ruben/Projects/Sampify/files/out',
     'DEBUG':       '/Users/ruben/Projects/Sampify/files/log/debug_dictionary_test.txt',
     'WARNING':     '/Users/ruben/Projects/Sampify/files/log/warning_dictionary_test.txt',
-    'textSettings':'/Users/ruben/Projects/Sampify/files/Toneel_settings.xlsx'
+    'TEXTSETTINGS':'/Users/ruben/Projects/Sampify/files/Toneel_settings.xlsx'
 }
 
 debugLog = logging.getLogger('debugLog')

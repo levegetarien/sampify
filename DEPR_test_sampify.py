@@ -1,26 +1,22 @@
-from classes.sampa_counter import count,compare
+from classes.counter import countSampa,compare
 from classes.sampify import Sampify
 from classes.naf import naf
 from config import *
 import codecs
 
 def read_naf():
-    a = Sampify(PATH + '/files/in/RULES werkdocument.xlsx')
-    n = naf(PATH + '/files/in/naf_alew001besl01_01.xml')
-    c = count()
+    a = Sampify(FILES['RULES'])
+    n = naf(FILES['NAF'],SETTINGS['EMOTION THRESHOLD'])
+    n.translate(a)
 
-    words_nl = n.get_wordlist_nopunct()
-    words_sp = [a.translate(i) for i in words_nl]
-    words_tpl= zip(words_nl, words_sp)
-    for i in words_sp: c.add(i)
-
-    return words_tpl, c.count
-
+    for i in n.WordList:
+        if i.isNotPunctuation():
+            print(i.Word(),i.Sampa())
 
 def validate():
-    a = Sampify(PATH + '/files/in/RULES werkdocument.xlsx')
-    c_ref = count()
-    c_trans = count()
+    a = Sampify(FILES['RULES'])
+    c_ref = countSampa()
+    c_trans = countSampa()
     with codecs.open(PATH + '/files/in/lijst_Alewijn_corrected.txt', 'r', encoding='UTF-8') as data_file:
         content = [x.strip() for x in data_file.readlines()]
         new_table_good, new_table_baad = "", ""
@@ -58,12 +54,13 @@ def print_errors(c_ref,test,group,name):
 
 
 if __name__ == "__main__":
+    read_naf()
     # words, count = read_naf()
     # for i in words:
     #     print("{0:<20}\t{1:<20}".format(i[0], i[1]))
     # for i in count.keys():
     #     print("{0:<20}\t{1:<20}".format(i, count[i]))
 
-    good,bad=validate()
+    # good,bad=validate()
     # with open(PATH+'/files/out/lijst_Alewijn_sampified_good.txt','w') as g: g.write(good)
     # with open(PATH+'/files/out/lijst_Alewijn_sampified_bad.txt','w') as g: g.write(bad)

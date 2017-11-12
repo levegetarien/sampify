@@ -6,7 +6,7 @@ Created on Wed Feb  8 19:35:27 2017
 import logging, unittest
 class countSampa:
     sampa_double = ["a:", "e:", "2:", "o:", "Ei", "9y", "Au", "E:", "9:", "O:", "A*", "E*", "O*"]
-    sampa_single = ["I", "E", "A", "O", "Y", "@", "i", "y", "u", "p", "b", "t", "d", "k", "g", "f", "v", "s", "z",
+    sampa_single = ["I", "E", "A", "O", "Y", "#", "i", "y", "u", "p", "b", "t", "d", "k", "g", "f", "v", "s", "z",
                          "x", "G", "h", "z", "S", "m", "n", "N", "l", "r", "w", "j"]
 
     def __init__(self,double=sampa_double, single=sampa_single):
@@ -91,7 +91,7 @@ class compare:
         self.sonorants=["m", "n", "N", "l", "r", "w", "j"]
         self.consonnants=self.plosives+self.fricatives+self.sonorants
 
-        self.checked=["I", "E", "A", "O", "Y", "@"]
+        self.checked=["I", "E", "A", "O", "Y", "#"]
         self.monophthongs=["i", "y", "u", "a:"]
         self.potential_diphthongs=["e:", "2:", "o:"]
         self.essential_diphthongs=["Ei", "9y", "Au"]

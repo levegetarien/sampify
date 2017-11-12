@@ -1,7 +1,7 @@
 from classes.sampify import Sampify
 from classes.naf import naf
 from config import *
-import json, xlrd
+import json, xlrd, xlwt
 
 def read_xls(s):
     debug.debug("reading text-related settings")
@@ -32,12 +32,27 @@ def build_text(s,dictionaries):
     return n
 
 def save_text(s,text):
-    debug.debug("saving {0}".format(i['NAME']))
-    stdout.info("saving {0}".format(i['NAME']))
+    debug.debug("saving {0}".format(s['NAME']))
+    stdout.info("saving {0}".format(s['NAME']))
     with open(s['OUT'],'w') as f:
         json.dump(text.countSampa.sampaCount(), f, indent=4)
         json.dump(text.countEmotions.emotionCount(), f, indent=4)
         json.dump(text.countEmotions.clusterCount(), f, indent=4)
+
+def save_result(f, result):
+    debug.debug("writing to excel")
+    wb = xlwt.Workbook()
+    sh = wb.add_sheet("Sheet1")
+    line=1
+    for i in result:
+        sh.write(line,0,i)
+        col=1
+        for j in result[i]:
+            if line==1: sh.write(0, col, j)
+            sh.write(line, col, result[i][j])
+            col+=1
+        line += 1
+    wb.save(f)
 
 if __name__ == "__main__":
     debug = logging.getLogger('debugLog')
@@ -52,9 +67,13 @@ if __name__ == "__main__":
     textSettings = read_xls(globalSettings)
 
     # read settings for a text
+    result={}
     for i in textSettings:
         # make naf object
         stdout.info('starting text {0}/{1}'.format(1+textSettings.index(i),len(textSettings)))
         text=build_text(i,dictionaries)
+        result[i['NAME']]=text.countSampa.sampaCount()
         # save result of naf object
         save_text(i,text)
+    stdout.info('saving counts to {0}'.format(globalSettings['COUNTS']))
+    save_result(globalSettings['COUNTS'], result)

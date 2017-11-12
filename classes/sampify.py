@@ -48,10 +48,10 @@ class Sampify(Rules):
 
     def _find_rule(self, wl, tl, Nsyllab, position, rules):
         if position == 0 and wl[0] in rules['P'].keys():
-            for i in sorted(rules['P'][wl[position]]['rules'].keys()):
+            for i in sorted(rules['P'][wl[position]]['default'].keys()):
                 self.debug.debug("testing prefix rule {0}:{1}:{2}".format('P', wl[position], i))
-                if self._test_rule(wl, tl, Nsyllab, rules['P'][wl[position]]['rules'][i], position, i):
-                    return i, rules['P'][wl[position]]['rules'][i]
+                if self._test_rule(wl, tl, Nsyllab, rules['P'][wl[position]]['default'][i], position, i):
+                    return i, rules['P'][wl[position]]['default'][i]
         for i in sorted(rules[tl[position]][wl[position]]['rules'].keys()):
             self.debug.debug("testing rule {0}:{1}:{2}".format(tl[position], wl[position], i))
             if self._test_rule(wl, tl, Nsyllab, rules[tl[position]][wl[position]]['rules'][i], position, i):

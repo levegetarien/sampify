@@ -10,20 +10,23 @@ def addStreamToLogger(log,file=False,level=logging.DEBUG):
 
 globalSettings={
     'RULES': {
-        'RULES A': '/Users/ruben/Projects/Sampify/files/RULES werkdocument.xlsx',
-        'RULES B': '/Users/ruben/Projects/Sampify/files/RULES werkdocument.xlsx',
-        'RULES C': '/Users/ruben/Projects/Sampify/files/RULES werkdocument.xlsx',
-        'RULES D': '/Users/ruben/Projects/Sampify/files/RULES werkdocument.xlsx'
+        'RULES A': '/Users/ruben/Projects/Sampify/files/in/RULES_A_V1.1.xlsx',
+        'RULES B': '/Users/ruben/Projects/Sampify/files/in/RULES_A_V1.1.xlsx',
+        'RULES C': '/Users/ruben/Projects/Sampify/files/in/RULES_A_V1.1.xlsx',
+        'RULES D': '/Users/ruben/Projects/Sampify/files/in/RULES_A_V1.1.xlsx'
     },
     'PATH':        '/Users/ruben/Projects/Sampify',
     'OUTPATH':     '/Users/ruben/Projects/Sampify/files/out',
     'DEBUG':       '/Users/ruben/Projects/Sampify/files/log/debug_dictionary_test.txt',
     'WARNING':     '/Users/ruben/Projects/Sampify/files/log/warning_dictionary_test.txt',
-    'TEXTSETTINGS':'/Users/ruben/Projects/Sampify/files/Toneel_settings.xlsx'
+    'TEXTSETTINGS':'/Users/ruben/Projects/Sampify/files/in/Toneel_settings.xlsx',
+    'COUNTS':   '/Users/ruben/Projects/Sampify/files/out/count_per_play.xls'
 }
 
 debugLog = logging.getLogger('debugLog')
 debugLog.setLevel(logging.WARNING)
+# debugLog.setLevel(logging.DEBUG)
+
 addStreamToLogger(debugLog,file=globalSettings['DEBUG'],level=logging.DEBUG)
 addStreamToLogger(debugLog,file=globalSettings['WARNING'],level=logging.WARNING)
 

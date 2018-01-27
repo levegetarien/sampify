@@ -97,7 +97,7 @@ class Sampify(Rules):
                 chlog.append('C')
             else:
                 chlog.append('S')
-                self.debug.warning("Unknown letter: '{0}'. Letter will not be translated.".format(i))
+                self.debug.warning("Unknown letter in word {1}: '{0}'. Letter will not be translated.".format(i,word))
         return word_l, chlog
 
     def clean(self, w):

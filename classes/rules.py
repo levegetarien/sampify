@@ -149,7 +149,7 @@ class Rules:
     def _xlsx_to_csv(self, f, g):
         import xlrd, csv
         wb = xlrd.open_workbook(f)
-        sh = wb.sheet_by_name('Sheet1')
+        sh = wb.sheet_by_name('RULES')
         your_csv_file = open(g, 'w')
         wr = csv.writer(your_csv_file, quoting=csv.QUOTE_MINIMAL, delimiter=';')
         for rownum in range(sh.nrows):

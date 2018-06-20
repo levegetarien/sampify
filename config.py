@@ -10,15 +10,15 @@ def addStreamToLogger(log,file=False,level=logging.DEBUG):
 
 globalSettings={
     'RULES': {
-        'RULES A': '/Users/ruben/Projects/Sampify/files/in/RULES_A_V1.2.xlsx',
-        'RULES B': '/Users/ruben/Projects/Sampify/files/in/RULES_A_V1.2.xlsx',
-        'RULES C': '/Users/ruben/Projects/Sampify/files/in/RULES_A_V1.2.xlsx',
-        'RULES D': '/Users/ruben/Projects/Sampify/files/in/RULES_A_V1.2.xlsx'
+        'RULES A': '/Users/ruben/Projects/Sampify/files/in/RULES_A_V1.5.xlsx',
+        'RULES B': '/Users/ruben/Projects/Sampify/files/in/RULES_A_V1.5.xlsx',
+        'RULES C': '/Users/ruben/Projects/Sampify/files/in/RULES_A_V1.5.xlsx',
+        'RULES D': '/Users/ruben/Projects/Sampify/files/in/RULES_A_V1.5.xlsx'
     },
     'PATH':        '/Users/ruben/Projects/Sampify',
     'OUTPATH':     '/Users/ruben/Projects/Sampify/files/out',
-    'DEBUG':       '/Users/ruben/Projects/Sampify/files/log/debug_dictionary_test.txt',
-    'WARNING':     '/Users/ruben/Projects/Sampify/files/log/warning_dictionary_test.txt',
+    'DEBUG':       '/Users/ruben/Projects/Sampify/files/log/debug_dictionary.txt',
+    'WARNING':     '/Users/ruben/Projects/Sampify/files/log/warning_dictionary.txt',
     'TEXTSETTINGS':'/Users/ruben/Projects/Sampify/files/in/Toneel_settings.xlsx',
     'COUNTS':      '/Users/ruben/Projects/Sampify/files/out/count_per_play.xls'
 }

@@ -17,6 +17,7 @@ def make_dict(s):
     for i in s['RULES']:
         debug.debug("adding dictionary {0}".format(i))
         dictionaries[i]=Sampify(s['RULES'][i])
+        dictionaries[i]._write_json(s['RULES'][i]+'.json')
     return dictionaries
 
 def build_text(s,dictionaries):
@@ -39,18 +40,47 @@ def save_text(s,text):
         json.dump(text.countEmotions.emotionCount(), f, indent=4)
         json.dump(text.countEmotions.clusterCount(), f, indent=4)
 
-def save_result(f, result):
+def save_result(f, text):
     debug.debug("writing to excel")
     wb = xlwt.Workbook()
     sh = wb.add_sheet("Sheet1")
     line=1
-    for i in result:
+    for i in text:
         sh.write(line,0,i)
         col=1
-        for j in result[i]:
+        result=text[i].countSampa.sampaCount()
+        tot_Sampa = 0
+        for j in result:
             if line==1: sh.write(0, col, j)
-            sh.write(line, col, result[i][j])
+            sh.write(line, col, result[j])
             col+=1
+            tot_Sampa+=result[j]
+        if line == 1: sh.write(0, col, 'sampa total')
+        sh.write(line, col, tot_Sampa)
+        col+=1
+
+        result = text[i].countEmotions.emotionCount()
+        tot_Emo=0
+        for j in result:
+            if line==1: sh.write(0, col, j)
+            sh.write(line, col, result[j])
+            col+=1
+            tot_Emo+=result[j]
+        if line == 1: sh.write(0, col, 'emotions total')
+        sh.write(line, col, tot_Emo)
+        col+=1
+
+        result=text[i].countEmotions.clusterCount()
+        tot_Clust=0
+        for j in result:
+            if line==1: sh.write(0, col, 'cluster:'+j)
+            sh.write(line, col, result[j])
+            col+=1
+            tot_Clust+=result[j]
+        if line == 1: sh.write(0, col, 'clsuters total')
+        sh.write(line, col, tot_Clust)
+        col+=1
+
         line += 1
     wb.save(f)
 
@@ -72,7 +102,7 @@ if __name__ == "__main__":
         # make naf object
         stdout.info('starting text {0}/{1}'.format(1+textSettings.index(i),len(textSettings)))
         text=build_text(i,dictionaries)
-        result[i['NAME']]=text.countSampa.sampaCount()
+        result[i['NAME']]=text
         # save result of naf object
         save_text(i,text)
     stdout.info('saving counts to {0}'.format(globalSettings['COUNTS']))

@@ -18,10 +18,31 @@ def test_dict_quality(ref,dictionary):
     return result
 
 if __name__ == "__main__":
+    RULES='/Users/ruben/Projects/Sampify/files/in/RULES_A_V1.5.xlsx'
+    REF="/Users/ruben/Projects/Sampify/files/in/referentie_vertaling_grpA_v1.5.txt"
+    ERRORS="/Users/ruben/Projects/Sampify/files/out/validatie_rules1.5_ref1.5.txt"
 
-    RULES='/Users/ruben/Projects/Sampify/files/in/RULES_A_V1.3.xlsx'
-    REF="/Users/ruben/Projects/Sampify/files/in/referentie_vertaling_grpA_v1.1.txt"
-    ERRORS="/Users/ruben/Projects/Sampify/files/out/validatie1.3.txt"
+    debugLog.setLevel(logging.DEBUG)
+
+    '''
+    LOGS="/Users/ruben/Projects/Sampify/files/out/logs_wordlist_rulesV1.5.txt"
+    addStreamToLogger(debugLog, file=LOGS, level=logging.DEBUG)
+
+    dictionary=Sampify(RULES)
+    wordlist=[
+        "aanstootelyks",
+        "collationeeren",
+        "conjungeren",
+        "discurreeren",
+        "drooghals",
+        "gerequireerdens",
+        "irreprochabel",
+        "onnoosle",
+        "pleidoyeeren"
+    ]
+    for NL in wordlist:
+        dictionary.translate(NL)
+    '''
 
     with codecs.open(ERRORS,'w', encoding='utf-8') as g:
         g.write(test_dict_quality(REF,Sampify(RULES)))

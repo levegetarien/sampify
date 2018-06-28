@@ -1,5 +1,6 @@
 from classes.sampify import Sampify
 from classes.naf import naf
+from classes.counter import countEmotions, countSampa
 from config import *
 import json, xlrd, xlwt
 
@@ -8,7 +9,8 @@ def read_xls(s):
     wb = xlrd.open_workbook(s['TEXTSETTINGS'])
     sh = wb.sheet_by_name('Sheet1')
     result=[{sh.row_values(0)[i]:sh.row_values(j)[i] for i in range(len(sh.row_values(0)))} for j in range(1,sh.nrows)]
-    for i in result: i.update({'OUT': s['OUTPATH']+'/'+i['NAF'].split('/')[-1][:-3] + 'count.txt'})
+    for i in result:
+        i.update({'OUT': s['OUTPATH']+'/'+i['NAF'].split('/')[-1][:-3] + 'count.json'})
     return result
 
 def make_dict(s):
@@ -32,13 +34,18 @@ def build_text(s,dictionaries):
     n.doCount()
     return n
 
-def save_text(s,text):
-    debug.debug("saving {0}".format(s['NAME']))
-    stdout.info("saving {0}".format(s['NAME']))
+def save_text(s,text, emotions, clusters):
+    debug.debug("saving {0}".format(s['OUT']))
+    stdout.info("saving {0}".format(s['OUT']))
+
+    result={'sampa count':   text.countSampa.sampaCount(),
+            'emotion count': text.countEmotions.emotionCount(),
+            'cluster count': text.countEmotions.clusterCount(),
+            'sampa count per cluster': clusters,
+            'sampa count per emotion': emotions}
+
     with open(s['OUT'],'w') as f:
-        json.dump(text.countSampa.sampaCount(), f, indent=4)
-        json.dump(text.countEmotions.emotionCount(), f, indent=4)
-        json.dump(text.countEmotions.clusterCount(), f, indent=4)
+        json.dump(result, f, indent=4)
 
 def save_result(f, text):
     debug.debug("writing to excel")
@@ -96,6 +103,9 @@ if __name__ == "__main__":
     stdout.info('reading text settings')
     textSettings = read_xls(globalSettings)
 
+    # make the run a bit shorter by looping over 1 text only
+    # textSettings=[textSettings[0]]
+
     # read settings for a text
     result={}
     for i in textSettings:
@@ -103,7 +113,25 @@ if __name__ == "__main__":
         stdout.info('starting text {0}/{1}'.format(1+textSettings.index(i),len(textSettings)))
         text=build_text(i,dictionaries)
         result[i['NAME']]=text
+
+        sampacount_per_emotion={i:countSampa() for i in countEmotions().emotions}
+        sampacount_per_cluster={i:countSampa() for i in countEmotions().clusters}
+
+        for k in text.WordList:
+            if k.EmotionList()!= None and len(k.EmotionList().Emotion())>0 and k.Sampa()!= None:
+                for j in k.EmotionList().Emotion():
+                    if j.Reference() in sampacount_per_emotion:
+                        sampacount_per_emotion[j.Reference()].add(k.Sampa())
+            if k.EmotionList() != None and len(k.EmotionList().Cluster()) > 0 and k.Sampa() != None:
+                for j in k.EmotionList().Cluster():
+                    if j.Reference() in sampacount_per_cluster:
+                        sampacount_per_cluster[j.Reference()].add(k.Sampa())
+
         # save result of naf object
-        save_text(i,text)
+        sampacount_per_cluster={i:sampacount_per_cluster[i].sampaCount() for i in sampacount_per_cluster}
+        sampacount_per_emotion={i:sampacount_per_emotion[i].sampaCount() for i in sampacount_per_emotion}
+
+        save_text(i,text, sampacount_per_emotion, sampacount_per_cluster)
+
     stdout.info('saving counts to {0}'.format(globalSettings['COUNTS']))
     save_result(globalSettings['COUNTS'], result)
